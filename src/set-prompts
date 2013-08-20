@@ -1,0 +1,25 @@
+#! /bin/bash
+
+# file di configurazione della bash di user e root
+BASH_USER_CONFIG_FILE=~/.bashrc
+BASH_ROOT_CONFIG_FILE=/root/.bashrc
+
+# definizione dei colori
+GREEN="\[\e[1;32m\]"
+WHITE="\[\e[1;37m\]"
+RED="\[\e[1;31m\]"
+DEFAULT="\[\e[0m\]" #colore di default del testo
+
+# definizione dei nuovi prompt per l'user e per root
+USER_PROMPT="$GREEN\u: $WHITE\w$GREEN\n>$DEFAULT "
+ROOT_PROMPT="$RED\u: $WHITE\w$RED\n>$DEFAULT "
+
+# imposto il nuovo prompt per user
+echo -e "\n# MODIFICO IL PROMPT" >> $BASH_USER_CONFIG_FILE
+echo  "PS1=\"$USER_PROMPT\"" >> $BASH_USER_CONFIG_FILE
+
+#imposto il nuovo prompt per root
+echo -e "\n# MODIFICO IL PROMPT" >> $BASH_ROOT_CONFIG_FILE
+echo  "PS1=\"$ROOT_PROMPT\"" >> $BASH_ROOT_CONFIG_FILE
+
+exit
