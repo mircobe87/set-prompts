@@ -10,16 +10,62 @@ WHITE="\[\e[1;37m\]"
 RED="\[\e[1;31m\]"
 DEFAULT="\[\e[0m\]" #colore di default del testo
 
-# definizione dei nuovi prompt per l'user e per root
-USER_PROMPT="$GREEN\u: $WHITE\w$GREEN\n>$DEFAULT "
-ROOT_PROMPT="$RED\u: $WHITE\w$RED\n>$DEFAULT "
+# recupero in nome dell'utente dal path della sua home dir
+USER_HOME=~
+USER=${USER_HOME//*\/}
 
-# imposto il nuovo prompt per user
+# memorizza la presenza o meno di GIT prompt
+GIT=""
+
 echo -e "\n# MODIFICO IL PROMPT" >> $BASH_USER_CONFIG_FILE
-echo  "PS1=\"$USER_PROMPT\"" >> $BASH_USER_CONFIG_FILE
-
-#imposto il nuovo prompt per root
 echo -e "\n# MODIFICO IL PROMPT" >> $BASH_ROOT_CONFIG_FILE
-echo  "PS1=\"$ROOT_PROMPT\"" >> $BASH_ROOT_CONFIG_FILE
 
+echo -n "GIT prompt: "
+if [ -f "/etc/bash_completion.d/git-prompt" ]; then
+	GIT=true
+	echo -e "\e[1mdisponibile\e[0m"
+else
+	GIT=false
+	echo -e "\e[1massente\e[0m"
+fi
+
+# se nel sistema e' installato GIT...
+if [ "$GIT" = "true" ]; then
+	# definisce un prompt che mostra anche il ramo di sviluppo
+	USER_PROMPT="$GREEN\u: $WHITE\w$DEFAULT"'\$(__git_ps1 \" [%s]\")'"$GREEN\n>$DEFAULT "
+	ROOT_PROMPT="$RED\u: $WHITE\w$DEFAULT"'\$(__git_ps1 \" [%s]\")'"$RED\n>$DEFAULT "
+
+	# inserisce il codice per abilitare la variabile GIT_PS1_SHOWDIRTYSTATE:
+	# la varibile GIT_PS1_SHOWDIRTYSTATE per dire al prompt di mostrare 
+	# un asterisco o un altro carattere per indicare che lo stato del ramo di
+	# lavoro è "dirty" (quacosa è stato odificato e non è stato ancora fatto
+	# il commit.
+	echo "GIT_PS1_SHOWDIRTYSTATE=true" >> $BASH_USER_CONFIG_FILE
+	echo "GIT_PS1_SHOWDIRTYSTATE=true" >> $BASH_ROOT_CONFIG_FILE
+
+	# inserisce il codice per far caricare il codice fornito da GIT
+	echo "source /etc/bash_completion.d/git-prompt" >> $BASH_USER_CONFIG_FILE
+	echo "source /etc/bash_completion.d/git-prompt" >> $BASH_ROOT_CONFIG_FILE
+else
+	# definizione dei nuovi prompt per l'user e per root senza informazioni GIT
+	USER_PROMPT="$GREEN\u: $WHITE\w$GREEN\n>$DEFAULT "
+	ROOT_PROMPT="$RED\u: $WHITE\w$RED\n>$DEFAULT "	
+fi
+
+# scrive il codice pre modificare i prompt
+echo  "export PS1=\"$USER_PROMPT\"" >> $BASH_USER_CONFIG_FILE
+echo -ne "nuovo prompt per l'utente \e[1;32m$USER\e[0m settato "
+if [ "$GIT" = "true" ]; then
+	echo "ed esteso con informazioni GIT"
+else
+	echo
+fi
+
+echo  "export PS1=\"$ROOT_PROMPT\"" >> $BASH_ROOT_CONFIG_FILE
+echo -ne "nuovo prompt per l'utente \e[1;31mroot\e[0m settato "
+if [ "$GIT" = "true" ]; then
+	echo "ed esteso con informazioni GIT"
+else
+	echo
+fi
 exit
