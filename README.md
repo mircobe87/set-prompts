@@ -10,11 +10,4 @@
 ## Esempio ##
  Lo script modifica il prompt di root e dell'user che lo esegue.
  Il risultato è un prompt del genere:
-            
-      ________________________________
-     |                                | 
-     | mircobe87: ~/Scrivania         | 
-     | > █                            | 
-     |________________________________| 
-
- di colore verde per l'user e di colore rosso per root. La work directory è di colore bianco.
+ !["di colore verde per l'user e di colore rosso per root. La work directory è di colore bianco."](./set-prompt.png "Anteprima")
